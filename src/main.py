@@ -29,6 +29,7 @@ def App():
 
 
 def main(page: ft.Page) -> None:
+    page.title = "Blazoen"
     page.padding = 0
     page.theme_mode = ft.ThemeMode.LIGHT
     page.render_views(component=App)

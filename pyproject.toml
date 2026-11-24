@@ -30,7 +30,7 @@ pythonpath = ["src"]
 
 [tool.flet]
 org = "com.mycompany"
-product = "blazoen"
+product = "Blazoen"
 company = "Flet"
 copyright = "Copyright (C) 2023-2026 by Flet"
 
