@@ -1,24 +1,20 @@
-import threading
+import atexit
+import shutil
+import tempfile
 import webbrowser
-from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
 from models.models import Etiket
 
+# Eén tijdelijke map voor alle geopende HTML-bestanden; weg bij afsluiten van de app.
+TEMP_MAP = Path(tempfile.mkdtemp(prefix="blazoen_"))
+atexit.register(shutil.rmtree, TEMP_MAP, ignore_errors=True)
+
+
 def open_html(html: str) -> None:
-    data = html.encode("utf-8")
-
-    class Handler(BaseHTTPRequestHandler):
-        def do_GET(self):
-            self.send_response(200)
-            self.send_header("Content-Type", "text/html; charset=utf-8")
-            self.send_header("Content-Length", str(len(data)))
-            self.end_headers()
-            self.wfile.write(data)
-
-    server = HTTPServer(("127.0.0.1", 0), Handler)  # poort 0 = vrije poort
-    threading.Thread(target=server.handle_request, daemon=True).start()  # één request
-    webbrowser.open(f"http://127.0.0.1:{server.server_port}/")
+    with tempfile.NamedTemporaryFile("w", suffix=".html", dir=TEMP_MAP, delete=False, encoding="utf-8") as f:
+        f.write(html)
+    webbrowser.open_new_tab(Path(f.name).as_uri())
 
 
 def bouw_html(etiketten: list[Etiket], sjabloon_pad: Path) -> str:
